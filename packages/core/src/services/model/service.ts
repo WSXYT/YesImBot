@@ -1,4 +1,10 @@
-import type { ChatModelInfo, CommonRequestOptions, EmbedModelInfo, ModelInfo, SharedProvider } from "@yesimbot/shared-model";
+import type {
+    ChatModelInfo,
+    CommonRequestOptions,
+    EmbedModelInfo,
+    ModelInfo,
+    SharedProvider,
+} from "@yesimbot/shared-model";
 import type { Context } from "koishi";
 import type { ModelGroup, ModelServiceConfig } from "./config";
 import { ChatModelAbility, ModelType } from "@yesimbot/shared-model";
@@ -27,14 +33,12 @@ export class ModelService extends Service<ModelServiceConfig> {
     private parseFullName(fullName: string): { providerName: string; modelName: string } | null {
         const separator = ModelService.separator;
         const index = fullName.indexOf(separator);
-        if (index <= 0)
-            return null;
+        if (index <= 0) return null;
 
         const providerName = fullName.slice(0, index).trim();
         const modelName = fullName.slice(index + separator.length).trim();
 
-        if (!providerName || !modelName)
-            return null;
+        if (!providerName || !modelName) return null;
 
         return { providerName, modelName };
     }
@@ -55,41 +59,42 @@ export class ModelService extends Service<ModelServiceConfig> {
 
     public resolveChatModels(nameOrGroup: string): string[] {
         const group = (this.config.groups ?? []).find((g) => g.name === nameOrGroup);
-        if (group)
-            return group.models;
+        if (group) return group.models;
         return [nameOrGroup];
     }
 
     private createUnion(options: Schema[], fallback: Schema): Schema {
-        if (!options.length)
-            return fallback;
+        if (!options.length) return fallback;
         return Schema.union(options);
     }
 
     private refreshSchemas(): void {
         // Chat models
         const chatOptions = Array.from(this.chatModelInfos.values()).map((m) =>
-            Schema.const(this.formatFullName(m.providerName, m.modelId)).description(`${m.providerName} - ${m.modelId}`),
+            Schema.const(this.formatFullName(m.providerName, m.modelId)).description(
+                `${m.providerName} - ${m.modelId}`,
+            ),
         );
 
         const chatVisionOptions = Array.from(this.chatModelInfos.values())
             .filter((m) => (m.abilities ?? []).includes(ChatModelAbility.ImageInput))
             .map((m) =>
-                Schema.const(this.formatFullName(m.providerName, m.modelId)).description(`${m.providerName} - ${m.modelId}`),
+                Schema.const(this.formatFullName(m.providerName, m.modelId)).description(
+                    `${m.providerName} - ${m.modelId}`,
+                ),
             );
 
         const embedOptions = Array.from(this.embedModelInfos.values()).map((m) =>
-            Schema.const(this.formatFullName(m.providerName, m.modelId)).description(`${m.providerName} - ${m.modelId}`),
+            Schema.const(this.formatFullName(m.providerName, m.modelId)).description(
+                `${m.providerName} - ${m.modelId}`,
+            ),
         );
 
         const customModel = Schema.string().description("自定义模型 (例如 google>gemini-3-pro)");
 
         this.ctx.schema.set("registry.chatModels", Schema.union([...chatOptions, customModel]).default(""));
 
-        this.ctx.schema.set(
-            "registry.chatVisionModels",
-            this.createUnion(chatVisionOptions, customModel).default(""),
-        );
+        this.ctx.schema.set("registry.chatVisionModels", this.createUnion(chatVisionOptions, customModel).default(""));
 
         this.ctx.schema.set("registry.embedModels", this.createUnion(embedOptions, customModel).default(""));
 
@@ -98,10 +103,7 @@ export class ModelService extends Service<ModelServiceConfig> {
         const groupOptions = groupNames.map((name) => Schema.const(name).description(name));
         const customGroup = Schema.string().description("自定义模型组");
 
-        this.ctx.schema.set(
-            "registry.availableGroups",
-            Schema.union([...groupOptions, customGroup]).default(""),
-        );
+        this.ctx.schema.set("registry.availableGroups", Schema.union([...groupOptions, customGroup]).default(""));
 
         // Mixed: group or chat model
         const groupOrModelOptions = [
@@ -225,8 +227,7 @@ export class ModelService extends Service<ModelServiceConfig> {
 
     public getChatModel(fullName: string): CommonRequestOptions | undefined {
         const parsed = this.parseFullName(fullName);
-        if (!parsed)
-            return undefined;
+        if (!parsed) return undefined;
 
         const provider = this.providers.get(parsed.providerName);
         if (provider && provider.chat) {
@@ -236,8 +237,7 @@ export class ModelService extends Service<ModelServiceConfig> {
 
     public getEmbedModel(fullName: string): CommonRequestOptions | undefined {
         const parsed = this.parseFullName(fullName);
-        if (!parsed)
-            return undefined;
+        if (!parsed) return undefined;
 
         const provider = this.providers.get(parsed.providerName);
         if (provider && provider.embed) {

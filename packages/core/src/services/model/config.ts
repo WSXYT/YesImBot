@@ -107,10 +107,11 @@ export const ModelServiceConfig: Schema<ModelServiceConfig> = Schema.object({
                 .required()
                 .description("选择要加入此模型组的聊天模型。"),
         }).collapse(),
-    )
-        .description("将聊天模型组合成逻辑分组，用于故障转移或按需调用。"),
+    ).description("将聊天模型组合成逻辑分组，用于故障转移或按需调用。"),
     chatModelGroup: Schema.dynamic("registry.availableGroups").description("选择一个模型组作为默认的聊天服务。"),
-    embeddingModel: Schema.dynamic("registry.embedModels").description("指定用于生成文本嵌入的特定模型 (例如 openai>text-embedding-3-small)。"),
+    embeddingModel: Schema.dynamic("registry.embedModels").description(
+        "指定用于生成文本嵌入的特定模型 (例如 openai>text-embedding-3-small)。",
+    ),
     switchConfig: SwitchConfig,
     stream: Schema.boolean().default(true).description("是否启用流式传输，以获得更快的响应体验。"),
 }).description("模型与切换策略配置");

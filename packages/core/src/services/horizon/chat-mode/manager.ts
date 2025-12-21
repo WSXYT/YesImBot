@@ -5,9 +5,7 @@ import type { ChatMode, ModeResult } from "./types";
 export class ChatModeManager {
     private modes: Map<string, ChatMode> = new Map();
 
-    constructor(private ctx: Context) {
-
-    }
+    constructor(private ctx: Context) {}
 
     /** 注册聊天模式 */
     public register(mode: ChatMode): void {

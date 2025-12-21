@@ -3,9 +3,7 @@ import antfu from "@antfu/eslint-config";
 export default antfu({
     // type: "lib",
 
-    ignores: [
-        "**/fixtures",
-    ],
+    ignores: ["**/fixtures"],
 
     gitignore: true,
 
@@ -29,5 +27,10 @@ export default antfu({
         "ts/no-redeclare": "warn",
         "style/arrow-parens": "off",
         "style/brace-style": "off",
+        "style/operator-linebreak": "off",
+        "antfu/if-newline": "off",
+        "style/quotes": "off",
+        "style/indent": "off",
+        "unicorn/number-literal-case": "off",
     },
 });

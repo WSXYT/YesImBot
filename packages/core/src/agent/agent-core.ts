@@ -19,7 +19,14 @@ declare module "koishi" {
 }
 
 export class AgentCore extends Service<Config> {
-    static readonly inject = [Services.Asset, Services.Memory, Services.Model, Services.Prompt, Services.Plugin, Services.Horizon];
+    static readonly inject = [
+        Services.Asset,
+        Services.Memory,
+        Services.Model,
+        Services.Prompt,
+        Services.Plugin,
+        Services.Horizon,
+    ];
 
     // 依赖的服务
     private readonly horizon: HorizonService;
@@ -46,12 +53,16 @@ export class AgentCore extends Service<Config> {
 
         const groupName = this.config.chatModelGroup || this.config.groups?.[0]?.name;
         const group = this.config.groups?.find((g) => g.name === groupName);
-        if (!group)
-            throw new Error(`无法找到聊天模型组: ${groupName}`);
+        if (!group) throw new Error(`无法找到聊天模型组: ${groupName}`);
 
         const models = this.model.resolveChatModels(group.name);
 
-        this.modelSwitcher = new ChatModelSwitcher(this.logger, this.model, { name: group.name, models }, this.config.switchConfig);
+        this.modelSwitcher = new ChatModelSwitcher(
+            this.logger,
+            this.model,
+            { name: group.name, models },
+            this.config.switchConfig,
+        );
         this.willing = new WillingnessManager(ctx, config);
         this.processor = new HeartbeatProcessor(ctx, config, this.modelSwitcher);
     }
@@ -125,7 +136,8 @@ export class AgentCore extends Service<Config> {
         const { type } = percept;
 
         switch (type) {
-            case "user.message": { // PerceptType.UserMessage
+            case "user.message": {
+                // PerceptType.UserMessage
                 const { channel } = percept.payload;
                 const channelKey = `${channel.platform}:${channel.id}`;
 
@@ -143,7 +155,10 @@ export class AgentCore extends Service<Config> {
         }
     }
 
-    private getDebouncedTask(channelKey: string, _schedulingStack?: string): WithDispose<(percept: UserMessagePercept) => void> {
+    private getDebouncedTask(
+        channelKey: string,
+        _schedulingStack?: string,
+    ): WithDispose<(percept: UserMessagePercept) => void> {
         let debouncedTask = this.debouncedReplyTasks.get(channelKey);
         if (!debouncedTask) {
             debouncedTask = this.ctx.debounce(async (percept: UserMessagePercept) => {

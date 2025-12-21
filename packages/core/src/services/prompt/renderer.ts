@@ -44,7 +44,12 @@ export interface IRenderer {
      * @param options - 渲染选项，如最大深度
      * @returns 渲染后的字符串
      */
-    render: (templateContent: string, scope: Record<string, any>, partials?: Record<string, string>, options?: RenderOptions) => string;
+    render: (
+        templateContent: string,
+        scope: Record<string, any>,
+        partials?: Record<string, string>,
+        options?: RenderOptions,
+    ) => string;
 }
 
 /**
@@ -80,7 +85,12 @@ export class MustacheRenderer implements IRenderer {
         return { variables, partials };
     }
 
-    public render(templateContent: string, scope: Record<string, any>, partials?: Record<string, string>, options?: RenderOptions): string {
+    public render(
+        templateContent: string,
+        scope: Record<string, any>,
+        partials?: Record<string, string>,
+        options?: RenderOptions,
+    ): string {
         const maxDepth = options?.maxDepth ?? 3;
         let output = templateContent;
         let previousOutput = "";

@@ -74,7 +74,8 @@ export function apply(ctx: Context, config: Config) {
 
             const classified = classifyModels(models);
 
-            const chatModels: Array<{ modelId: string; modelType: ModelType.Chat; abilities?: ChatModelAbility[] }> = [];
+            const chatModels: Array<{ modelId: string; modelType: ModelType.Chat; abilities?: ChatModelAbility[] }> =
+                [];
             const embedModels: Array<{ modelId: string; modelType: ModelType.Embed; dimension: number }> = [];
             const unknownModels: string[] = [];
 
@@ -112,7 +113,9 @@ export function apply(ctx: Context, config: Config) {
 
             if (unknownModels.length > 0) {
                 registry.addUnknownModels(providerName, unknownModels);
-                ctx.logger.warn(`发现 ${unknownModels.length} 个未分类模型: ${unknownModels.slice(0, 5).join(", ")}${unknownModels.length > 5 ? "..." : ""}`);
+                ctx.logger.warn(
+                    `发现 ${unknownModels.length} 个未分类模型: ${unknownModels.slice(0, 5).join(", ")}${unknownModels.length > 5 ? "..." : ""}`,
+                );
             }
         } catch (err: any) {
             ctx.logger.warn(`注册模型目录失败: ${err?.message ?? String(err)}`);
@@ -121,8 +124,7 @@ export function apply(ctx: Context, config: Config) {
 
     ctx.on("dispose", () => {
         const registry = ctx.get("yesimbot.model");
-        if (!registry)
-            return;
+        if (!registry) return;
 
         try {
             registry.removeProvider(providerName);

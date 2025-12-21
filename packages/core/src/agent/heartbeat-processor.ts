@@ -61,12 +61,15 @@ export class HeartbeatProcessor {
         return success;
     }
 
-    private async executeModelChat(selected: SelectedChatModel, options: {
-        messages: Message[];
-        stream: boolean;
-        abortSignal?: AbortSignal;
-        temperature?: number;
-    }): Promise<GenerateTextResult> {
+    private async executeModelChat(
+        selected: SelectedChatModel,
+        options: {
+            messages: Message[];
+            stream: boolean;
+            abortSignal?: AbortSignal;
+            temperature?: number;
+        },
+    ): Promise<GenerateTextResult> {
         if (!options.stream) {
             return await generateText({
                 ...selected.options,
@@ -90,8 +93,7 @@ export class HeartbeatProcessor {
         usage.catch(() => {});
 
         for await (const textDelta of textStream) {
-            if (textDelta === "")
-                continue;
+            if (textDelta === "") continue;
             finalContentParts.push(textDelta);
         }
 
@@ -245,8 +247,7 @@ export class HeartbeatProcessor {
                 const controller = new AbortController();
 
                 const timeout = setTimeout(() => {
-                    if (this.config.stream)
-                        controller.abort("请求超时");
+                    if (this.config.stream) controller.abort("请求超时");
                 }, this.config.switchConfig.firstToken);
 
                 llmRawResponse = await this.executeModelChat(selected, {
@@ -258,11 +259,11 @@ export class HeartbeatProcessor {
                     ]),
                 });
                 clearTimeout(timeout);
-                const prompt_tokens
-                    = llmRawResponse.usage?.prompt_tokens
-                        || `~${estimateTokensByRegex(messages.map((m) => m.content).join())}`;
-                const completion_tokens
-                    = llmRawResponse.usage?.completion_tokens || `~${estimateTokensByRegex(llmRawResponse.text)}`;
+                const prompt_tokens =
+                    llmRawResponse.usage?.prompt_tokens ||
+                    `~${estimateTokensByRegex(messages.map((m) => m.content).join())}`;
+                const completion_tokens =
+                    llmRawResponse.usage?.completion_tokens || `~${estimateTokensByRegex(llmRawResponse.text)}`;
                 /* prettier-ignore */
                 this.logger.info(`💰 Token 消耗 | 输入: ${prompt_tokens} | 输出: ${completion_tokens} | 耗时: ${new Date().getTime() - startTime}ms`);
                 this.modelSwitcher.recordResult(selected.fullName, true, undefined, Date.now() - startTime);
@@ -321,8 +322,7 @@ export class HeartbeatProcessor {
 
         for (let index = 0; index < agentActions.length; index++) {
             const action = agentActions[index];
-            if (!action?.name)
-                continue;
+            if (!action?.name) continue;
 
             const result = await this.plugin.invoke(action.name, action.params ?? {}, context);
 
@@ -397,8 +397,7 @@ export class HeartbeatProcessor {
         //     return null;
         // }
 
-        if (!Array.isArray(data.actions))
-            return null;
+        if (!Array.isArray(data.actions)) return null;
 
         data.request_heartbeat = typeof data.request_heartbeat === "boolean" ? data.request_heartbeat : false;
 
@@ -425,8 +424,7 @@ export class HeartbeatProcessor {
  * @returns A string representation of `obj`
  */
 function _toString(obj) {
-    if (typeof obj === "string")
-        return obj;
+    if (typeof obj === "string") return obj;
     return JSON.stringify(obj);
 }
 

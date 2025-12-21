@@ -88,7 +88,10 @@ export interface NoticeEventData {
 }
 
 export type NoticeRecord = BaseTimelineEntry<
-    TimelineEventType.MemberJoin | TimelineEventType.MemberLeave | TimelineEventType.StateUpdate | TimelineEventType.Reaction,
+    | TimelineEventType.MemberJoin
+    | TimelineEventType.MemberLeave
+    | TimelineEventType.StateUpdate
+    | TimelineEventType.Reaction,
     NoticeEventData
 >;
 

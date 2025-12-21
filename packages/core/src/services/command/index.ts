@@ -19,8 +19,7 @@ export class CommandService extends Service {
         this.subcommand(".conf", "配置管理指令集", { authority: 3 });
 
         this.subcommand(".conf.get [key:string]", { authority: 3 }).action(async ({ session, options }, key) => {
-            if (isEmpty(key))
-                return "请输入有效的配置键";
+            if (isEmpty(key)) return "请输入有效的配置键";
             let parsedKeyChain: (string | number)[];
             try {
                 parsedKeyChain = parseKeyChain(key);
@@ -33,8 +32,7 @@ export class CommandService extends Service {
             return JSON.stringify(data, null, 2) || "未找到配置";
 
             function get(data: any, keys: (string | number)[]) {
-                if (keys.length === 0)
-                    return data;
+                if (keys.length === 0) return data;
 
                 // 递归情况：处理键链
                 const currentKey = keys[0]; // 当前处理的键或索引
@@ -48,10 +46,8 @@ export class CommandService extends Service {
         this.subcommand(".conf.set [key:string] [value:string]", { authority: 3 })
             .option("force", "-f <force:boolean>")
             .action(async ({ session, options }, key, value) => {
-                if (isEmpty(key))
-                    return "请输入有效的配置键";
-                if (isEmpty(value))
-                    return "请输入有效的值";
+                if (isEmpty(key)) return "请输入有效的配置键";
+                if (isEmpty(value)) return "请输入有效的值";
 
                 // 新增：解析键链，支持数组索引
                 let parsedKeyChain: (string | number)[];
@@ -135,7 +131,11 @@ export class CommandService extends Service {
     }
 
     subcommand<D extends string>(def: D, config?: Command.Config): Command<never, never, Argv.ArgumentType<D>>;
-    subcommand<D extends string>(def: D, desc: string, config?: Command.Config): Command<never, never, Argv.ArgumentType<D>>;
+    subcommand<D extends string>(
+        def: D,
+        desc: string,
+        config?: Command.Config,
+    ): Command<never, never, Argv.ArgumentType<D>>;
     public subcommand<D extends string>(def: D, desc?: string | Command.Config, config?: Command.Config) {
         if (typeof desc === "string") {
             return this.command.subcommand(def, desc, config);

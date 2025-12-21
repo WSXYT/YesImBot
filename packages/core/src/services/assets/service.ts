@@ -23,8 +23,7 @@ const ELEMENT_TO_PROCESS = ["img", "image", "audio", "video", "file", "mface"];
  * @returns 元素标签名 ('img', 'audio', 'video', 'file')
  */
 function getTagNameFromMime(mime: string): string {
-    if (!mime)
-        return "file";
+    if (!mime) return "file";
     const mainType = mime.split("/")[0];
     switch (mainType) {
         case "image":
@@ -140,10 +139,13 @@ export class AssetService extends Service<Config> {
      * @param options - 内部选项，如预设的ID
      * @returns 资源的唯一 ID
      */
-    async create(source: string | Buffer, metadata: AssetMetadata = {}, options: { id?: string } = {}): Promise<string> {
+    async create(
+        source: string | Buffer,
+        metadata: AssetMetadata = {},
+        options: { id?: string } = {},
+    ): Promise<string> {
         const { data, type } = await this._getSourceBuffer(source);
-        if (!data || data.length === 0)
-            throw new Error("资源内容为空");
+        if (!data || data.length === 0) throw new Error("资源内容为空");
 
         const hash = createHash("sha256").update(data).digest("hex");
         const [existing] = await this.ctx.database.get(TableName.Assets, { hash });
@@ -191,8 +193,7 @@ export class AssetService extends Service<Config> {
      */
     async read(id: string, options: ReadAssetOptions = {}): Promise<Buffer | string> {
         const asset = await this._getAssetWithUpdate(id);
-        if (!asset)
-            throw new Error(`数据库中找不到资源: ${id}`);
+        if (!asset) throw new Error(`数据库中找不到资源: ${id}`);
 
         let finalBuffer: Buffer;
         const shouldProcess = options.image?.process && asset.mime.startsWith("image/");
@@ -217,8 +218,8 @@ export class AssetService extends Service<Config> {
         switch (format) {
             case "base64":
                 return finalBuffer.toString("base64");
-            case "data-url": // 处理后的图片统一为 webp 或 jpeg，需要确定MIME
-            {
+            case "data-url": {
+                // 处理后的图片统一为 webp 或 jpeg，需要确定MIME
                 const outputMime = shouldProcess ? "image/jpeg" : asset.mime;
                 return `data:${outputMime};base64,${finalBuffer.toString("base64")}`;
             }
@@ -234,8 +235,7 @@ export class AssetService extends Service<Config> {
      */
     async getInfo(id: string): Promise<AssetInfo | null> {
         const asset = await this._getAssetWithUpdate(id);
-        if (!asset)
-            return null;
+        if (!asset) return null;
         const { hash, ...info } = asset; // 移除不应公开的 hash 字段
         return info;
     }
@@ -264,10 +264,8 @@ export class AssetService extends Service<Config> {
     async encode(source: string | Element[]): Promise<Element[]> {
         const elements = typeof source === "string" ? h.parse(source) : source;
         return h.transformAsync(elements, async (element) => {
-            if (!element.attrs.id)
-                return element;
-            if (!ELEMENT_TO_PROCESS.includes(element.type))
-                return element;
+            if (!element.attrs.id) return element;
+            if (!ELEMENT_TO_PROCESS.includes(element.type)) return element;
 
             const info = await this.getInfo(element.attrs.id);
             if (!info) {
@@ -294,12 +292,10 @@ export class AssetService extends Service<Config> {
      * 处理 transform/transformAsync 中的单个元素
      */
     private async _processTransformElement(element: Element, isAsync: boolean): Promise<Element> {
-        if (!ELEMENT_TO_PROCESS.includes(element.type))
-            return element;
+        if (!ELEMENT_TO_PROCESS.includes(element.type)) return element;
         const originalUrl = element.attrs.src || element.attrs.url || element.attrs.file;
         const filename = element.attrs.filename || element.attrs.name || element.attrs.fileName;
-        if (!originalUrl || element.attrs.id)
-            return element;
+        if (!originalUrl || element.attrs.id) return element;
 
         // 根据元素类型和URL协议决定是否处理
         let tagName = element.type;
@@ -331,7 +327,9 @@ export class AssetService extends Service<Config> {
                 try {
                     await this.create(originalUrl, metadata, { id: placeholderId });
                 } catch (error: any) {
-                    this.logger.error(`后台资源持久化失败 (ID: ${placeholderId}, 源: ${truncate(originalUrl, 100)}): ${error.message}`);
+                    this.logger.error(
+                        `后台资源持久化失败 (ID: ${placeholderId}, 源: ${truncate(originalUrl, 100)}): ${error.message}`,
+                    );
                     // 可在此处添加失败处理逻辑，如更新数据库标记此ID无效
                 }
             })();
@@ -357,8 +355,7 @@ export class AssetService extends Service<Config> {
         }
         if (source.startsWith("data:")) {
             const match = source.match(/^data:.+;base64,(.*)$/);
-            if (!match)
-                throw new Error("无效的 data: URL 格式");
+            if (!match) throw new Error("无效的 data: URL 格式");
             return {
                 type: match[0].split("/")[1].split(";")[0],
                 data: Buffer.from(match[1], "base64"),
@@ -383,11 +380,12 @@ export class AssetService extends Service<Config> {
             const head = await this.ctx.http.head(url, { timeout: this.config.downloadTimeout / 2 });
             const contentLength = head.get("content-length");
             if (contentLength && Number(contentLength) > this.config.maxFileSize) {
-                throw new Error(`文件大小 (${formatSize(Number(contentLength))}) 超出限制 (${formatSize(this.config.maxFileSize)})`);
+                throw new Error(
+                    `文件大小 (${formatSize(Number(contentLength))}) 超出限制 (${formatSize(this.config.maxFileSize)})`,
+                );
             }
         } catch (error: any) {
-            if (error.message.includes("超出限制"))
-                throw error;
+            if (error.message.includes("超出限制")) throw error;
         }
 
         const response = await this.ctx.http.file(url, { timeout: this.config.downloadTimeout });
@@ -475,7 +473,9 @@ export class AssetService extends Service<Config> {
                 return compressedBuffer;
             }
             quality -= 10;
-            this.logger.debug(`压缩后大小为 ${formatSize(compressedBuffer.length)}，超出限制，降低质量至 ${quality} 重试...`);
+            this.logger.debug(
+                `压缩后大小为 ${formatSize(compressedBuffer.length)}，超出限制，降低质量至 ${quality} 重试...`,
+            );
         }
 
         this.logger.warn(`无法将图片压缩到 ${this.config.image.maxSizeMB}MB 以下，将使用最后一次压缩结果`);
@@ -590,7 +590,7 @@ export class AssetService extends Service<Config> {
         const canvas = new Jimp({
             width: finalWidth,
             height: finalHeight,
-            color: 0xFFFFFFFF, // 白色背景
+            color: 0xffffffff, // 白色背景
         });
 
         // 将帧拼接到画布上
@@ -619,8 +619,7 @@ export class AssetService extends Service<Config> {
 
     private async _getAssetWithUpdate(id: string): Promise<AssetData | null> {
         const [asset] = await this.ctx.database.get(TableName.Assets, { id });
-        if (!asset)
-            return null;
+        if (!asset) return null;
         await this._updateLastUsed(id);
         return asset;
     }
@@ -630,15 +629,16 @@ export class AssetService extends Service<Config> {
     }
 
     private registerHttpEndpoint() {
-        const routePath = this.assetEndpoint.startsWith("/") ? this.assetEndpoint : new URL(this.assetEndpoint).pathname;
+        const routePath = this.assetEndpoint.startsWith("/")
+            ? this.assetEndpoint
+            : new URL(this.assetEndpoint).pathname;
         const finalRoute = `${routePath.replace(/\/$/, "")}/:id`; // 确保路径格式正确
 
         this.ctx.server.get(finalRoute, async (ctx) => {
             const { id } = ctx.params;
             try {
                 const info = await this.getInfo(id);
-                if (!info)
-                    throw new Error("Asset not found in database");
+                if (!info) throw new Error("Asset not found in database");
 
                 const buffer = await this.storage.read(id);
                 ctx.status = 200;
@@ -703,8 +703,8 @@ export class AssetService extends Service<Config> {
 
         for (const fileName of allFiles.filter(
             (file) =>
-                path.join(this.ctx.baseDir, this.config.storagePath, file)
-                !== path.join(this.ctx.baseDir, this.config.image.processedCachePath),
+                path.join(this.ctx.baseDir, this.config.storagePath, file) !==
+                path.join(this.ctx.baseDir, this.config.image.processedCachePath),
         )) {
             // 跳过处理后的缓存文件
             if (fileName.endsWith(AssetService.PROCESSED_IMAGE_CACHE_SUFFIX)) {

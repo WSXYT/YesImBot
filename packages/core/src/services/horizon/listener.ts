@@ -37,11 +37,9 @@ export class EventListener {
         // 这个中间件记录用户消息，并触发响应流程
         this.disposers.push(
             this.ctx.middleware(async (session, next) => {
-                if (!this.service.isChannelAllowed(session))
-                    return next();
+                if (!this.service.isChannelAllowed(session)) return next();
 
-                if (session.author?.isBot)
-                    return next();
+                if (session.author?.isBot) return next();
 
                 await this.recordUserMessage(session);
                 await next();
@@ -83,8 +81,7 @@ export class EventListener {
             this.ctx.on(
                 "after-send",
                 (session) => {
-                    if (!this.service.isChannelAllowed(session))
-                        return;
+                    if (!this.service.isChannelAllowed(session)) return;
                     this.recordBotSentMessage(session);
                 },
                 true,
@@ -94,11 +91,9 @@ export class EventListener {
         // 记录从另一个设备手动发送的消息
         this.disposers.push(
             this.ctx.on("message", (session) => {
-                if (!this.service.isChannelAllowed(session))
-                    return;
+                if (!this.service.isChannelAllowed(session)) return;
                 if (session.userId === session.bot.selfId && !session.scope) {
-                    if (this.config.ignoreSelfMessage)
-                        return;
+                    if (this.config.ignoreSelfMessage) return;
                     this.handleOperatorMessage(session);
                 }
             }),
@@ -155,8 +150,7 @@ export class EventListener {
     }
 
     private async recordBotSentMessage(session: Session): Promise<void> {
-        if (!session.content || !session.messageId)
-            return;
+        if (!session.content || !session.messageId) return;
 
         this.ctx.logger.debug(`记录机器人消息 | 频道: ${session.cid} | 消息ID: ${session.messageId}`);
 
@@ -181,8 +175,7 @@ export class EventListener {
 
     // TODO: 从平台适配器拉取用户信息
     private async updateMemberInfo(session: Session): Promise<void> {
-        if (!session.guildId || !session.author)
-            return;
+        if (!session.guildId || !session.author) return;
 
         try {
             const memberKey: Partial<MemberEntity> = {

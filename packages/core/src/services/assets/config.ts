@@ -47,12 +47,18 @@ export const AssetServiceConfig: Schema<AssetServiceConfig> = Schema.object({
             .default("data/assets/processed")
             .description("处理后图片的缓存存储路径"),
         // resizeEnabled: Schema.boolean().default(true).description("读取图片时是否启用动态缩放和压缩"),
-        targetSize: Schema.union([512, 768, 1024, 1536, 2048]).default(1024).description("图片处理后长边的目标最大像素") as Schema<number>,
+        targetSize: Schema.union([512, 768, 1024, 1536, 2048])
+            .default(1024)
+            .description("图片处理后长边的目标最大像素") as Schema<number>,
         maxSizeMB: Schema.number().min(0.5).max(10).default(3).description("处理后图片文件的最大体积（MB）"),
         gifProcessingStrategy: Schema.union(["firstFrame", "stitch"])
             .default("stitch")
             .description("GIF 动图处理策略：'firstFrame' (提取第一帧) 或 'stitch' (拼接多帧)"),
-        gifFramesToExtract: Schema.number().min(2).max(16).default(6).description("当策略为 'stitch' 时，提取并拼接的 GIF 关键帧数量"),
+        gifFramesToExtract: Schema.number()
+            .min(2)
+            .max(16)
+            .default(6)
+            .description("当策略为 'stitch' 时，提取并拼接的 GIF 关键帧数量"),
     }).description("图片处理配置"),
 
     recoveryEnabled: Schema.boolean().default(true).description("是否启用资源恢复机制"),

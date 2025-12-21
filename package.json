@@ -27,11 +27,13 @@
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",
     "@types/node": "^22.16.2",
+    "@vue/compiler-sfc": "^3.5.26",
     "bumpp": "^10.2.0",
     "dumble": "^0.2.2",
     "esbuild": "^0.27.1",
     "eslint": "^9.33.0",
     "husky": "^9.1.7",
+    "jiti": "^2.6.1",
     "lint-staged": "^16.2.7",
     "pkgroll": "^2.21.4",
     "prettier": "^3.6.2",

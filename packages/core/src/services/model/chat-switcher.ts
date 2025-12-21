@@ -54,12 +54,10 @@ export class ChatModelSwitcher {
     }
 
     private isAvailable(fullName: string): boolean {
-        if (!this.switchConfig.breaker.enabled)
-            return true;
+        if (!this.switchConfig.breaker.enabled) return true;
 
         const state = this.states.get(fullName);
-        if (!state?.openUntil)
-            return true;
+        if (!state?.openUntil) return true;
 
         return Date.now() >= state.openUntil;
     }
@@ -68,8 +66,7 @@ export class ChatModelSwitcher {
         const available = candidates.filter((m) => this.isAvailable(m));
         const pool = available.length ? available : candidates;
 
-        if (!pool.length)
-            return undefined;
+        if (!pool.length) return undefined;
 
         switch (this.switchConfig.strategy) {
             case SwitchStrategy.RoundRobin: {
@@ -82,14 +79,12 @@ export class ChatModelSwitcher {
             }
             case SwitchStrategy.WeightedRandom: {
                 const total = pool.reduce((sum, m) => sum + (this.states.get(m)?.weight ?? 1), 0);
-                if (total <= 0)
-                    return pool[0];
+                if (total <= 0) return pool[0];
 
                 let r = Math.random() * total;
                 for (const m of pool) {
                     r -= this.states.get(m)?.weight ?? 1;
-                    if (r <= 0)
-                        return m;
+                    if (r <= 0) return m;
                 }
                 return pool[pool.length - 1];
             }
@@ -106,8 +101,7 @@ export class ChatModelSwitcher {
                         return { m, successRate, latency };
                     })
                     .sort((a, b) => {
-                        if (b.successRate !== a.successRate)
-                            return b.successRate - a.successRate;
+                        if (b.successRate !== a.successRate) return b.successRate - a.successRate;
                         return a.latency - b.latency;
                     });
                 return scored[0]?.m;
@@ -117,12 +111,10 @@ export class ChatModelSwitcher {
 
     public getModel(): SelectedChatModel | null {
         const fullName = this.pickCandidate(this.group.models);
-        if (!fullName)
-            return null;
+        if (!fullName) return null;
 
         const options = this.registry.getChatModel(fullName);
-        if (!options)
-            return null;
+        if (!options) return null;
 
         return {
             fullName,
@@ -133,17 +125,15 @@ export class ChatModelSwitcher {
 
     public recordResult(fullName: string, success: boolean, error: ModelError | undefined, latencyMs: number): void {
         const state = this.states.get(fullName);
-        if (!state)
-            return;
+        if (!state) return;
 
         state.totalRequests += 1;
-        if (success)
-            state.successRequests += 1;
+        if (success) state.successRequests += 1;
 
         // EMA latency
         const alpha = 0.2;
-        state.averageLatency
-            = state.averageLatency === 0 ? latencyMs : state.averageLatency * (1 - alpha) + latencyMs * alpha;
+        state.averageLatency =
+            state.averageLatency === 0 ? latencyMs : state.averageLatency * (1 - alpha) + latencyMs * alpha;
 
         if (!success) {
             state.failureCount += 1;

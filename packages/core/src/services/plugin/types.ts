@@ -44,17 +44,22 @@ export interface BaseDefinition<TConfig = any, TParams = any, TResult = any> {
     execute: (params: TParams, context: FunctionContext) => Promise<TResult>;
 }
 
-export interface ToolDefinition<TConfig = any, TParams = any, TResult = any>
-    extends BaseDefinition<TConfig, TParams, TResult> {
+export interface ToolDefinition<TConfig = any, TParams = any, TResult = any> extends BaseDefinition<
+    TConfig,
+    TParams,
+    TResult
+> {
     type: FunctionType.Tool;
 }
 
-export interface ActionDefinition<TConfig = any, TParams = any, TResult = any>
-    extends BaseDefinition<TConfig, TParams, TResult> {
+export interface ActionDefinition<TConfig = any, TParams = any, TResult = any> extends BaseDefinition<
+    TConfig,
+    TParams,
+    TResult
+> {
     type: FunctionType.Action;
 }
 
-// eslint-disable-next-line style/operator-linebreak
 export type Definition<TConfig = any, TParams = any, TResult = any> =
     | ToolDefinition<TConfig, TParams, TResult>
     | ActionDefinition<TConfig, TParams, TResult>;

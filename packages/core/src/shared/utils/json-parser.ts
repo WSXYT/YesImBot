@@ -13,7 +13,6 @@ export interface ParseResult<T> {
 }
 
 const defaultLogger: Logger = {
-
     info: (message) => console.log(`[INFO] ${message}`),
     warn: (message) => console.warn(`[WARN] ${message}`),
     error: (message) => console.error(`[ERROR] ${message}`),
@@ -61,8 +60,8 @@ export class JsonParser<T> {
             // 如果找不到结束的 ``` 标记（即 lastCodeBlockIndex <= codeBlockStartIndex），
             // 我们就假定内容是从开始的 ``` 之后一直到整个字符串的末尾。
             // 这可以稳健地处理 LLM 输出被截断的情况。
-            let content
-                = lastCodeBlockIndex > codeBlockStartIndex
+            let content =
+                lastCodeBlockIndex > codeBlockStartIndex
                     ? processedString.substring(codeBlockStartIndex + 3, lastCodeBlockIndex)
                     : processedString.substring(codeBlockStartIndex + 3);
 
@@ -189,14 +188,14 @@ export class JsonParser<T> {
             // 一个合法的JSON数组在'['之后（忽略空格）必须是值（如{, ", t, f, n, 数字）或']'。
             const charAfterBracket = trimmed.substring(1).trim().charAt(0);
             if (
-                charAfterBracket === "]" // 空数组
-                || charAfterBracket === "{" // 对象数组
-                || charAfterBracket === "\"" // 字符串数组
-                || charAfterBracket === "t" // 布尔值 (true)
-                || charAfterBracket === "f" // 布尔值 (false)
-                || charAfterBracket === "n" // null
-                || (charAfterBracket >= "0" && charAfterBracket <= "9") // 数字
-                || charAfterBracket === "-" // 负数
+                charAfterBracket === "]" || // 空数组
+                charAfterBracket === "{" || // 对象数组
+                charAfterBracket === '"' || // 字符串数组
+                charAfterBracket === "t" || // 布尔值 (true)
+                charAfterBracket === "f" || // 布尔值 (false)
+                charAfterBracket === "n" || // null
+                (charAfterBracket >= "0" && charAfterBracket <= "9") || // 数字
+                charAfterBracket === "-" // 负数
             ) {
                 return true;
             }

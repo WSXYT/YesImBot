@@ -10,13 +10,13 @@ import { PromptServiceConfig } from "@/services/prompt";
 
 export const CONFIG_VERSION = "2.0.2";
 
-export type Config = ModelServiceConfig
-    & AgentBehaviorConfig
-    & MemoryConfig
-    & HistoryConfig
-    & ToolServiceConfig
-    & AssetServiceConfig
-    & PromptServiceConfig;
+export type Config = ModelServiceConfig &
+    AgentBehaviorConfig &
+    MemoryConfig &
+    HistoryConfig &
+    ToolServiceConfig &
+    AssetServiceConfig &
+    PromptServiceConfig;
 
 export const Config: Schema<Config> = Schema.intersect([
     ModelServiceConfig.description("模型服务"),
