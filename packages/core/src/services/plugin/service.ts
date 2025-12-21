@@ -74,7 +74,6 @@ export class PluginService extends Service<Config> {
                 if (filterKeyword) {
                     allFuncs = allFuncs.filter(
                         (t) =>
-                            // eslint-disable-next-line style/operator-linebreak
                             t.name.toLowerCase().includes(filterKeyword) ||
                             t.description.toLowerCase().includes(filterKeyword),
                     );

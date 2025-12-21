@@ -60,7 +60,6 @@ export interface ActionDefinition<TConfig = any, TParams = any, TResult = any> e
     type: FunctionType.Action;
 }
 
-// eslint-disable-next-line style/operator-linebreak
 export type Definition<TConfig = any, TParams = any, TResult = any> =
     | ToolDefinition<TConfig, TParams, TResult>
     | ActionDefinition<TConfig, TParams, TResult>;
