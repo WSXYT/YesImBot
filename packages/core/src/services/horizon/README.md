@@ -12,13 +12,13 @@
 
 我们建立了一套完整的认知框架，将冰冷的数据转化为"智能体的主观体验"：
 
-| 概念 | 隐喻 | 职责 |
-|------|------|------|
-| **Percept (感知)** | 瞬时的感官输入 | 驱动智能体"心跳"的能量单元，是当下正在发生的事情 |
-| **Observation (观察)** | 过去的记忆画面 | 从数据库记录转换而来的"鲜活场景"，是智能体眼中的历史 |
-| **Entity (实体)** | 舞台上的演员 | 环境中的参与者或对象，带有主观描述和关系 |
-| **Environment (环境)** | 智能体所处的舞台 | 定义"在哪里"，提供场景背景 |
-| **WorldState (世界状态)** | 此时此刻的剧本 | 智能体"睁开眼睛"看到的完整世界 |
+| 概念                      | 隐喻             | 职责                                                 |
+| ------------------------- | ---------------- | ---------------------------------------------------- |
+| **Percept (感知)**        | 瞬时的感官输入   | 驱动智能体"心跳"的能量单元，是当下正在发生的事情     |
+| **Observation (观察)**    | 过去的记忆画面   | 从数据库记录转换而来的"鲜活场景"，是智能体眼中的历史 |
+| **Entity (实体)**         | 舞台上的演员     | 环境中的参与者或对象，带有主观描述和关系             |
+| **Environment (环境)**    | 智能体所处的舞台 | 定义"在哪里"，提供场景背景                           |
+| **WorldState (世界状态)** | 此时此刻的剧本   | 智能体"睁开眼睛"看到的完整世界                       |
 
 通过统一的隐喻系统，我们不是在构建"数据管道"，而是在构建"认知流"。
 
@@ -29,24 +29,29 @@
 我们明确区分了两个层次：
 
 #### **数据库层 (Storage Layer)**
+
 - **TimelineEntry**: 存储所有事件的原始记录（Message, Notice, AgentRecord）
 - **EntityRecord**: 存储所有实体的原始数据（User, Member, NPC...）
 
 **特点**：
+
 - 扁平化、通用化
 - 存储 ID 引用，不展开关联数据
 - 持久化，面向查询优化
 
 #### **运行时层 (Runtime Layer)**
+
 - **Observation**: `TimelineEntry` 的增强视图，展开 `replyTo`、解析 `sender` 为完整 `Entity`
 - **Entity**: `EntityRecord` 的运行时对象，挂载关联数据（如 `MemberEntity.user`）
 
 **特点**：
+
 - 结构化、语义化
 - 展开关联，便于 LLM 理解
 - 瞬时性，面向渲染优化
 
 **命名规范**：
+
 - 数据库层：使用后缀 `Record` 或 `Data`（如 `MessageRecord`, `EntityRecord`）
 - 运行时层：直接使用核心名词（如 `Observation`, `Entity`）
 
@@ -58,9 +63,9 @@
 
 ```typescript
 export enum PerceptType {
-    UserMessage = "user.message",     // 用户消息
-    SystemSignal = "system.signal",   // 系统信号
-    TimerTick = "system.timer.tick",  // 定时器触发
+    UserMessage = "user.message", // 用户消息
+    SystemSignal = "system.signal", // 系统信号
+    TimerTick = "system.timer.tick", // 定时器触发
 }
 
 export interface UserMessagePercept {
@@ -68,12 +73,13 @@ export interface UserMessagePercept {
     type: PerceptType.UserMessage;
     priority: number;
     timestamp: Date;
-    payload: { ... };  // 解耦的上下文数据
-    runtime?: { session };  // 可选的运行时钩子
+    payload: Record<string, unknown>; // 解耦的上下文数据
+    runtime?: { session }; // 可选的运行时钩子
 }
 ```
 
 **设计要点**：
+
 - **命名规范**：`domain.entity.event`（小写点分法）
 - **瞬时性**：Percept 是"即用即丢"的，处理完成后即消失
 - **解耦性**：与 Koishi Session 解耦，payload 包含构建上下文所需的核心数据
@@ -118,7 +124,8 @@ export interface MessageObservation {
     sender: Entity; // 已展开的实体
     messageId: string;
     content: string;
-    replyTo?: { // 已展开的回复内容
+    replyTo?: {
+        // 已展开的回复内容
         messageId: string;
         content: string;
         sender: Entity;
@@ -133,6 +140,7 @@ export type Observation = MessageObservation | NoticeObservation;
 ### 4. **Entity (实体) - 统一的参与者模型**
 
 #### 数据库层：EntityRecord
+
 ```typescript
 export interface EntityRecord {
     id: string; // "user:qq:123456" 或 "member:123456@guild:789"
@@ -151,6 +159,7 @@ export interface EntityRecord {
 ```
 
 #### 运行时层：Entity 及其特化
+
 ```typescript
 export interface Entity {
     id: string;
@@ -180,6 +189,7 @@ export interface MemberEntity extends Entity {
 ```
 
 **设计要点**：
+
 - **统一存储**：User 和 Member 都存储在同一张 `Entity` 表中
 - **ID 命名空间**：通过 `type:id` 格式避免冲突（如 `user:qq:123456` vs `member:123456@guild:789`）
 - **上下文绑定**：Member 是"用户在特定环境中的身份"，通过 `parentId` 和 `refId` 建立关联
@@ -220,10 +230,12 @@ export interface WorldState {
 **设计要点**：
 
 #### **双模式设计**
+
 - **Scoped (聚焦模式)**：针对特定环境的交互（如回复群消息），包含 `environment` 和 `entities`
 - **Global (广角模式)**：全局性任务（如定时反思），不绑定特定环境
 
 #### **记忆的分层**
+
 1.  **eventHistory (事件历史)**：
     - 包含：过去的 `Observation`（Message, Notice）
     - 排除：智能体自己的 `AgentRecord`
@@ -301,27 +313,33 @@ export interface WorldState {
 
 ```markdown
 # 🎭 当前场景 (Current Situation)
+
 你正在 [Koishi开发群] 中。
 气氛：[活跃] (基于消息频率判断)
 参与者：
+
 - UserA (管理员) - 你的朋友，经常帮你解决问题
 - UserB (群友) - 新人，刚加入群聊
 
 # 📜 你的所见所闻 (Observations)
+
 > UserA 看着大家说: "有人知道怎么配置插件吗？"
 > UserB 回复 UserA: "我也在找这个"
 
 # ⚙️ 你的执行记录 (Working Memory)
+
 你刚才尝试：调用工具 `search_docs` 搜索 "插件配置"
 结果：✅ 成功
 内容：[找到 3 篇文档...]
 
 # 💭 相关记忆 (Retrieved Memories)
+
 - 上次 UserA 问过类似问题，你推荐了官方文档
 - 这个群通常喜欢详细的回答，而不是简短的链接
 ```
 
 **核心技巧**：
+
 - 使用引导词（"你正在..."、"UserA 看着..."）强制拉入第一人称视角
 - 分区呈现，避免信息混杂
 - 高亮重要状态（如上一轮的工具调用结果）
@@ -333,6 +351,7 @@ export interface WorldState {
 ### 1. 异步工具调用
 
 当前设计已为异步工具预留空间：
+
 - 工具调用时，立即记录 `AgentToolRecord`
 - 在 `workingHistory` 中创建"占位符"
 - 任务完成时，记录 `ToolResultRecord` 并更新占位符

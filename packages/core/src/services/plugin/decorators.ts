@@ -18,8 +18,7 @@ export function Tool<TParams>(descriptor: FunctionInput<any, TParams>) {
         propertyKey: string,
         methodDescriptor: TypedPropertyDescriptor<(params: TParams, context: FunctionContext) => Promise<any>>,
     ) {
-        if (!methodDescriptor.value)
-            return;
+        if (!methodDescriptor.value) return;
 
         target.staticTools ??= [];
 
@@ -40,8 +39,7 @@ export function Action<TParams>(descriptor: FunctionInput<any, TParams>) {
         propertyKey: string,
         methodDescriptor: TypedPropertyDescriptor<(params: TParams, context: FunctionContext) => Promise<any>>,
     ) {
-        if (!methodDescriptor.value)
-            return;
+        if (!methodDescriptor.value) return;
 
         target.staticActions ??= [];
 

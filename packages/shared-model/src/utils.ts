@@ -16,8 +16,7 @@ export function withRetry(fetchFn: AnyFetch, policy: RetryPolicy): AnyFetch {
     const retry = Math.max(0, policy.retry ?? 0);
     const retryDelay = Math.max(0, policy.retryDelay ?? 0);
 
-    if (retry <= 0)
-        return fetchFn;
+    if (retry <= 0) return fetchFn;
 
     return (async (input: any, init?: any) => {
         let lastError: unknown;
@@ -73,12 +72,13 @@ export interface SharedFetchOptions {
 }
 
 export function createSharedFetch(options: SharedFetchOptions = {}): AnyFetch {
-    const baseFetch: AnyFetch = options.fetch
-        ?? (typeof globalThis.fetch === "function" ? globalThis.fetch.bind(globalThis) as AnyFetch : (ufetch as unknown as AnyFetch));
+    const baseFetch: AnyFetch =
+        options.fetch ??
+        (typeof globalThis.fetch === "function"
+            ? (globalThis.fetch.bind(globalThis) as AnyFetch)
+            : (ufetch as unknown as AnyFetch));
 
-    const proxied = (options.proxy && options.proxy.length > 0)
-        ? useProxy(options.proxy)
-        : baseFetch;
+    const proxied = options.proxy && options.proxy.length > 0 ? useProxy(options.proxy) : baseFetch;
 
     const retry = options.retry ?? 0;
     if (retry && retry > 0) {
@@ -89,8 +89,7 @@ export function createSharedFetch(options: SharedFetchOptions = {}): AnyFetch {
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-    if (!value || typeof value !== "object")
-        return false;
+    if (!value || typeof value !== "object") return false;
     const proto = Object.getPrototypeOf(value);
     return proto === Object.prototype || proto === null;
 }
@@ -99,8 +98,7 @@ export function deepMerge<T>(base: T, ...overrides: Array<Partial<T> | undefined
     let result: any = base;
 
     for (const override of overrides) {
-        if (!override)
-            continue;
+        if (!override) continue;
 
         if (!isPlainObject(result) || !isPlainObject(override)) {
             result = override as any;
@@ -146,8 +144,7 @@ export function normalizeBaseURL(url: string | undefined | null, logger?: { warn
     const versionMatches = baseURL.match(/\/v\d+(?=\/|$)/g);
     if (versionMatches && versionMatches.length > 1) {
         const msg = `检测到 baseURL 中包含多个版本号: ${baseURL}，将跳过自动截断/补全逻辑。`;
-        if (logger)
-            logger.warn(msg);
+        if (logger) logger.warn(msg);
         else console.warn(`[yesimbot] ${msg}`);
         return baseURL;
     }
@@ -170,8 +167,7 @@ export function normalizeBaseURL(url: string | undefined | null, logger?: { warn
             }
         } catch (err) {
             const msg = `检测到无效的 baseURL: ${baseURL}，将跳过自动截断/补全逻辑。`;
-            if (logger)
-                logger.warn(msg);
+            if (logger) logger.warn(msg);
             else console.warn(`[yesimbot] ${msg}`);
             return baseURL;
         }

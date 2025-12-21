@@ -79,20 +79,33 @@ const WillingnessConfig: Schema<WillingnessConfig> = Schema.object({
             .description("收到普通文本消息的基础分<br/>这部分参数都可以通过 `添加分支` 进行更加精细化的配置"),
     }),
     attribute: Schema.object({
-        atMention: Schema.computed<Schema<number>>(Schema.number().default(100)).default(100).description("被@时的额外加成"),
-        isQuote: Schema.computed<Schema<number>>(Schema.number().default(15)).default(15).description("作为回复/引用时的额外加成"),
-        isDirectMessage: Schema.computed<Schema<number>>(Schema.number().default(40)).default(40).description("在私聊场景下的额外加成"),
+        atMention: Schema.computed<Schema<number>>(Schema.number().default(100))
+            .default(100)
+            .description("被@时的额外加成"),
+        isQuote: Schema.computed<Schema<number>>(Schema.number().default(15))
+            .default(15)
+            .description("作为回复/引用时的额外加成"),
+        isDirectMessage: Schema.computed<Schema<number>>(Schema.number().default(40))
+            .default(40)
+            .description("在私聊场景下的额外加成"),
     }),
     interest: Schema.object({
         keywords: Schema.computed<Schema<string[]>>(Schema.array(Schema.string()).default([]))
             .role("table")
             .default([])
             .description("触发高兴趣的关键词"),
-        keywordMultiplier: Schema.computed<Schema<number>>(Schema.number().default(1.2)).default(1.2).description("包含关键词时的乘数"),
-        defaultMultiplier: Schema.computed<Schema<number>>(Schema.number().default(1)).default(1).description("默认乘数"),
+        keywordMultiplier: Schema.computed<Schema<number>>(Schema.number().default(1.2))
+            .default(1.2)
+            .description("包含关键词时的乘数"),
+        defaultMultiplier: Schema.computed<Schema<number>>(Schema.number().default(1))
+            .default(1)
+            .description("默认乘数"),
     }),
     lifecycle: Schema.object({
-        maxWillingness: Schema.computed<Schema<number>>(Schema.number().default(100)).min(10).default(100).description("意愿值的最大上限"),
+        maxWillingness: Schema.computed<Schema<number>>(Schema.number().default(100))
+            .min(10)
+            .default(100)
+            .description("意愿值的最大上限"),
         decayHalfLifeSeconds: Schema.computed<Schema<number>>(Schema.number().default(600))
             .min(5)
             .default(600)
@@ -109,7 +122,7 @@ const WillingnessConfig: Schema<WillingnessConfig> = Schema.object({
         replyCost: Schema.computed<Schema<number>>(Schema.number().default(35))
             .min(0)
             .default(35)
-            .description("决定回复后，扣除的\"发言精力惩罚\""),
+            .description('决定回复后，扣除的"发言精力惩罚"'),
     }),
 });
 
@@ -133,13 +146,15 @@ export const VisionConfig: Schema<VisionConfig> = Schema.object({
     enableVision: Schema.boolean().default(false).description("是否启用视觉功能"),
     allowedImageTypes: Schema.array(Schema.string()).default(["image/jpeg", "image/png"]).description("允许的图片类型"),
     maxImagesInContext: Schema.number().default(3).description("在上下文中允许包含的最大图片数量"),
-    imageLifecycleCount: Schema.number().default(2).description("图片的上下文生命周期（出现次数）。超过此次数的图片将被忽略，除非被引用"),
+    imageLifecycleCount: Schema.number()
+        .default(2)
+        .description("图片的上下文生命周期（出现次数）。超过此次数的图片将被忽略，除非被引用"),
     detail: Schema.union(["low", "high", "auto"]).default("low").description("图片细节程度"),
 });
 
-export type AgentBehaviorConfig = ArousalConfig
-    & WillingnessConfig
-    & VisionConfig & {
+export type AgentBehaviorConfig = ArousalConfig &
+    WillingnessConfig &
+    VisionConfig & {
         streamAction: boolean;
         heartbeat: number;
     };

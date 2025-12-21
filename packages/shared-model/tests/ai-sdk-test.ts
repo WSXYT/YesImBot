@@ -1,7 +1,7 @@
-import type { ModelMessage, StepResult, Tool, ToolSet } from "ai";
+import type { StepResult, Tool } from "ai";
 import process from "node:process";
 import { createDeepSeek } from "@ai-sdk/deepseek";
-import { generateObject, generateText, jsonSchema, stepCountIs, streamObject, streamText, tool } from "ai";
+import { generateText, jsonSchema, stepCountIs, tool } from "ai";
 
 const deepseek = createDeepSeek({
     apiKey: process.env.API_KEY_DEEPSEEK!,

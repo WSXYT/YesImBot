@@ -100,12 +100,10 @@ export class MemoryBlock {
     }
 
     public async startWatching(): Promise<void> {
-        if (this.watcher)
-            return;
+        if (this.watcher) return;
         // this.ctx.logger.debug(`[文件监视] 启动 | 路径: ${this.filePath}`);
         this.watcher = fs.watch(this._filePath, (eventType) => {
-            if (this.debounceTimer)
-                clearTimeout(this.debounceTimer);
+            if (this.debounceTimer) clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(async () => {
                 try {
                     if (!fs.existsSync(this.filePath)) {

@@ -98,8 +98,8 @@ export function getCanonicalModelId(modelId: string): string {
             // 1. Prefix looks like a known provider name
             // 2. Model part doesn't start with a digit (not a version like "2.5-flash")
             // 3. Provider prefix is not part of the model name itself (like "qwen2" in "qwen2.5")
-            const knownProviders
-                = /^(?:anthropic|openai|google|cohere|mistral|meta|aws|azure|huggingface|hf|deepseek|moonshot|zhipu|minimax|baidu|yi)$/i;
+            const knownProviders =
+                /^(?:anthropic|openai|google|cohere|mistral|meta|aws|azure|huggingface|hf|deepseek|moonshot|zhipu|minimax|baidu|yi)$/i;
 
             // Check if it's a model name with version (e.g., qwen2.5, gpt-4.5)
             const isModelWithVersion = /^[a-z][\w-]*\d\.\d+/i.test(canonical);
@@ -182,39 +182,39 @@ export function classifyByKeyword(modelId: string): Partial<ClassifiedModelInfo>
 
     // Embedding models
     if (
-        lowerCaseId.includes("embedding")
-        || lowerCaseId.includes("embed")
-        || lowerCaseId.includes("bge-")
-        || lowerCaseId.includes("gte-")
+        lowerCaseId.includes("embedding") ||
+        lowerCaseId.includes("embed") ||
+        lowerCaseId.includes("bge-") ||
+        lowerCaseId.includes("gte-")
     ) {
         return { modelType: ModelType.Embed };
     }
 
     // Image/Video generation models
     if (
-        lowerCaseId.includes("dall-e")
-        || lowerCaseId.includes("dalle")
-        || lowerCaseId.includes("stable-diffusion")
-        || lowerCaseId.includes("midjourney")
-        || lowerCaseId.includes("flux")
-        || lowerCaseId.includes("playground")
-        || lowerCaseId.includes("imagen")
-        || lowerCaseId.includes("sora")
-        || lowerCaseId.includes("veo")
-        || lowerCaseId.includes("cogvideo")
-        || lowerCaseId.includes("pika")
-        || lowerCaseId.includes("runway")
-        || lowerCaseId.includes("luma")
-        || lowerCaseId.includes("kling")
-        || lowerCaseId.includes("vidu")
-        || lowerCaseId.includes("seedream")
-        || lowerCaseId.includes("recraft")
-        || lowerCaseId.includes("-sd3")
-        || lowerCaseId.includes("ssd-")
-        || lowerCaseId.startsWith("sd3")
-        || lowerCaseId.includes("mj-")
-        || lowerCaseId.includes("nano-banana")
-        || lowerCaseId.includes("-image")
+        lowerCaseId.includes("dall-e") ||
+        lowerCaseId.includes("dalle") ||
+        lowerCaseId.includes("stable-diffusion") ||
+        lowerCaseId.includes("midjourney") ||
+        lowerCaseId.includes("flux") ||
+        lowerCaseId.includes("playground") ||
+        lowerCaseId.includes("imagen") ||
+        lowerCaseId.includes("sora") ||
+        lowerCaseId.includes("veo") ||
+        lowerCaseId.includes("cogvideo") ||
+        lowerCaseId.includes("pika") ||
+        lowerCaseId.includes("runway") ||
+        lowerCaseId.includes("luma") ||
+        lowerCaseId.includes("kling") ||
+        lowerCaseId.includes("vidu") ||
+        lowerCaseId.includes("seedream") ||
+        lowerCaseId.includes("recraft") ||
+        lowerCaseId.includes("-sd3") ||
+        lowerCaseId.includes("ssd-") ||
+        lowerCaseId.startsWith("sd3") ||
+        lowerCaseId.includes("mj-") ||
+        lowerCaseId.includes("nano-banana") ||
+        lowerCaseId.includes("-image")
     ) {
         return { modelType: ModelType.Image };
     }
@@ -239,10 +239,10 @@ export function classifyByKeyword(modelId: string): Partial<ClassifiedModelInfo>
 
     // Reasoning models
     if (
-        lowerCaseId.includes("reasoning")
-        || lowerCaseId.includes("think")
-        || lowerCaseId.includes("o1")
-        || lowerCaseId.includes("o3")
+        lowerCaseId.includes("reasoning") ||
+        lowerCaseId.includes("think") ||
+        lowerCaseId.includes("o1") ||
+        lowerCaseId.includes("o3")
     ) {
         return {
             modelType: ModelType.Chat,
@@ -269,11 +269,7 @@ export function classifyByKeyword(modelId: string): Partial<ClassifiedModelInfo>
     }
 
     // Llama series
-    if (
-        lowerCaseId.includes("llama")
-        || lowerCaseId.includes("codellama")
-        || lowerCaseId.includes("code-llama")
-    ) {
+    if (lowerCaseId.includes("llama") || lowerCaseId.includes("codellama") || lowerCaseId.includes("code-llama")) {
         return { modelType: ModelType.Chat };
     }
 
@@ -340,14 +336,12 @@ function findByFamily(modelId: string): ClassifiedModelInfo | null {
             // - "claude-3-opus" matches "claude-3" family ✓
             // - "flash" does NOT match "gemini-flash" family ✗
             if (
-                lowerNormId === lowerFamily
-                || lowerNormId.startsWith(`${lowerFamily}-`)
-                || lowerNormId.startsWith(`${lowerFamily}.`)
+                lowerNormId === lowerFamily ||
+                lowerNormId.startsWith(`${lowerFamily}-`) ||
+                lowerNormId.startsWith(`${lowerFamily}.`)
             ) {
                 // Check if all models in this family have the same type
-                const familyModels = modelIds
-                    .map((id) => modelIndex.models[id])
-                    .filter(Boolean);
+                const familyModels = modelIds.map((id) => modelIndex.models[id]).filter(Boolean);
 
                 if (familyModels.length === 0) {
                     continue;
@@ -439,15 +433,15 @@ export function classifyModel(modelId: string): ClassifiedModelInfo {
 
     // 6. Default fallback: Check if it's likely a utility/task model
     const lowerCaseId = modelId.toLowerCase();
-    const isUtilityModel
-        = lowerCaseId.includes("pdf-")
-            || lowerCaseId.includes("url-")
-            || lowerCaseId.includes("-task")
-            || lowerCaseId.includes("batch-")
-            || lowerCaseId.includes("search-")
-            || lowerCaseId.includes("-get")
-            || lowerCaseId.includes("avatar")
-            || lowerCaseId.includes("analysis");
+    const isUtilityModel =
+        lowerCaseId.includes("pdf-") ||
+        lowerCaseId.includes("url-") ||
+        lowerCaseId.includes("-task") ||
+        lowerCaseId.includes("batch-") ||
+        lowerCaseId.includes("search-") ||
+        lowerCaseId.includes("-get") ||
+        lowerCaseId.includes("avatar") ||
+        lowerCaseId.includes("analysis");
 
     // If it's not a utility model, default to Chat
     // Most unknown models from aggregation platforms are chat models

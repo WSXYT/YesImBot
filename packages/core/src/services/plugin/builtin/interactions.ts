@@ -51,8 +51,7 @@ export default class InteractionsPlugin extends Plugin<InteractionsConfig> {
                 emoji_id,
             });
 
-            if (result.status === "failed")
-                return Failed((result as any).message);
+            if (result.status === "failed") return Failed((result as any).message);
             this.ctx.logger.info(`Bot[${selfId}]对消息 ${message_id} 进行了表态： ${emoji_id}`);
             return Success(result);
         } catch (error: any) {
@@ -134,8 +133,7 @@ export default class InteractionsPlugin extends Plugin<InteractionsConfig> {
                 user_id: Number(user_id),
             });
 
-            if (result.status === "failed")
-                return Failed(result.data);
+            if (result.status === "failed") return Failed(result.data);
 
             this.ctx.logger.info(`Bot[${selfId}]戳了戳 ${user_id}`);
             return Success(result);
@@ -170,7 +168,11 @@ export default class InteractionsPlugin extends Plugin<InteractionsConfig> {
     }
 }
 
-async function formatForwardMessage(ctx: Context, session: Session, formatForwardMessages: ForwardMessage[]): Promise<string> {
+async function formatForwardMessage(
+    ctx: Context,
+    session: Session,
+    formatForwardMessages: ForwardMessage[],
+): Promise<string> {
     try {
         const formattedMessages = await Promise.all(
             formatForwardMessages.map(async (message) => {

@@ -35,8 +35,7 @@ export function isNotEmpty(str: string | null | undefined): boolean {
  * @returns 格式化后的大小字符串，如 "1.23 MB"。
  */
 export function formatSize(bytes: number, decimals: number = 2): string {
-    if (bytes === 0)
-        return "0 B";
+    if (bytes === 0) return "0 B";
 
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
@@ -87,10 +86,8 @@ export function truncate(str: string, length: number = 80): string {
  * @returns 转换后的字符串。
  */
 export function stringify(obj: any, space?: number, fallback: string = ""): string {
-    if (typeof obj === "string")
-        return obj;
-    if (obj == null)
-        return fallback; // 处理 null 和 undefined
+    if (typeof obj === "string") return obj;
+    if (obj == null) return fallback; // 处理 null 和 undefined
     try {
         return JSON.stringify(obj, null, space);
     } catch (error: any) {
@@ -155,8 +152,7 @@ export function hashString(str: string): string {
  * @returns 首字母大写的字符串。
  */
 export function capitalize(str: string): string {
-    if (!str)
-        return "";
+    if (!str) return "";
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -166,8 +162,7 @@ export function capitalize(str: string): string {
  * @returns 驼峰命名格式的字符串。
  */
 export function toCamelCase(str: string): string {
-    if (!str)
-        return "";
+    if (!str) return "";
     return str.replace(/[-_](\w)/g, (_, c) => c.toUpperCase());
 }
 
@@ -177,8 +172,7 @@ export function toCamelCase(str: string): string {
  * @returns 蛇形命名格式的字符串。
  */
 export function toSnakeCase(str: string): string {
-    if (!str)
-        return "";
+    if (!str) return "";
     return str
         .replace(/([A-Z])/g, "_$1") // 在大写字母前加下划线
         .replace(/[-_\s]+/g, "_") // 将连字符、下划线、空格替换为单个下划线
@@ -191,8 +185,7 @@ export function toSnakeCase(str: string): string {
  * @returns 烤串命名格式的字符串。
  */
 export function toKebabCase(str: string): string {
-    if (!str)
-        return "";
+    if (!str) return "";
     return str
         .replace(/([A-Z])/g, "-$1") // 在大写字母前加连字符
         .replace(/[_\s]+/g, "-") // 将下划线、空格替换为单个连字符
@@ -238,10 +231,8 @@ export function parseKeyChain(keyString: string): (string | number)[] {
 export function tryParse(value: string): any {
     // 1. 尝试解析为布尔值
     const lowerValue = value.toLowerCase().trim();
-    if (lowerValue === "true")
-        return true;
-    if (lowerValue === "false")
-        return false;
+    if (lowerValue === "true") return true;
+    if (lowerValue === "false") return false;
     // 2. 尝试解析为数字 (但排除仅包含空格或空字符串)
     // 使用 parseFloat 确保能处理小数，同时 Number() 检查 NaN 来排除非数字字符串
     if (!Number.isNaN(Number(value)) && !Number.isNaN(Number.parseFloat(value))) {
@@ -257,7 +248,6 @@ export function tryParse(value: string): any {
             return parsedJSON;
         }
     } catch (e) {
-
         // 解析失败，不是有效的JSON
     }
     // 4. Fallback: 如果都不是，则认为是普通字符串

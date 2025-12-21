@@ -32,7 +32,9 @@ const CoreUtilConfig: Schema<CoreUtilConfig> = Schema.object({
         maxDelay: Schema.number().default(4000).description("最大延迟 (毫秒)"),
     }),
     vision: Schema.object({
-        modelOrGroup: Schema.dynamic("providerRegistry.chatModelOrGroup").description("用于图片描述的多模态模型或模型组"),
+        modelOrGroup: Schema.dynamic("providerRegistry.chatModelOrGroup").description(
+            "用于图片描述的多模态模型或模型组",
+        ),
         detail: Schema.union(["low", "high", "auto"]).default("low").description("图片细节程度"),
     }),
 });
@@ -59,8 +61,7 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
 
         try {
             const visionModelOrGroup = String(this.config.vision.modelOrGroup ?? "").trim();
-            if (!visionModelOrGroup)
-                throw new Error("视觉模型未配置");
+            if (!visionModelOrGroup) throw new Error("视觉模型未配置");
 
             const registry = this.ctx[Services.Model];
             const candidates: string[] = registry.resolveChatModels(visionModelOrGroup);
@@ -125,7 +126,9 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
         name: "get_image_description",
         description: "使用外部视觉模型获取图片描述，当你无法查看图片，或者此图片数据在上下文中丢失时使用此工具",
         parameters: withInnerThoughts({
-            image_id: Schema.string().required().description("要获取的图片ID，如在 `<img id='12345'>` 中的 12345 即是其 ID"),
+            image_id: Schema.string()
+                .required()
+                .description("要获取的图片ID，如在 `<img id='12345'>` 中的 12345 即是其 ID"),
             question: Schema.string().required().description("要询问的问题，如'图片中有什么?'"),
         }),
     })
@@ -148,18 +151,20 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
             return Failed(`资源不是图片`);
         }
 
-        const image = (await this.assetService.read(image_id, { format: "data-url", image: { process: true, format: "jpeg" } })) as string;
+        const image = (await this.assetService.read(image_id, {
+            format: "data-url",
+            image: { process: true, format: "jpeg" },
+        })) as string;
 
-        const prompt
-            = imageInfo.mime === "image/gif"
+        const prompt =
+            imageInfo.mime === "image/gif"
                 ? `这是一张GIF动图的关键帧序列，你需要结合整体，将其作为一个连续的片段来描述，并回答问题：${question}\n\n图片内容：`
                 : `请详细描述以下图片，并回答问题：${question}\n\n图片内容：`;
 
         try {
             const registry = this.ctx[Services.Model];
             const options = registry.getChatModel(this.visionModelFullName);
-            if (!options)
-                return Failed(`视觉模型未注册: ${this.visionModelFullName}`);
+            if (!options) return Failed(`视觉模型未注册: ${this.visionModelFullName}`);
 
             const response = await generateText({
                 ...options,
@@ -195,8 +200,7 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
             .parse(text)
             .filter((e) => e.type === "text")
             .join("");
-        if (isEmpty(text))
-            return MIN_DELAY;
+        if (isEmpty(text)) return MIN_DELAY;
 
         const chineseRegex = /[\u4E00-\u9FA5]/g;
         const chineseMatches = text.match(chineseRegex);
@@ -204,13 +208,17 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
         const englishCharCount = text.length - chineseCharCount;
         const chineseDelay = (chineseCharCount / CHINESE_CHAR_PER_SECOND) * 1000;
         const englishDelay = (englishCharCount / ENGLISH_CHAR_PER_SECOND) * 1000;
-        const totalRandomness = (chineseCharCount * CHINESE_RANDOM_FACTOR + englishCharCount * ENGLISH_RANDOM_FACTOR) / text.length;
+        const totalRandomness =
+            (chineseCharCount * CHINESE_RANDOM_FACTOR + englishCharCount * ENGLISH_RANDOM_FACTOR) / text.length;
         const randomFactor = 1 + (Math.random() - 0.5) * 2 * totalRandomness;
         const calculatedDelay = BASE_DELAY + (chineseDelay + englishDelay) * randomFactor;
         return Math.max(MIN_DELAY, Math.min(calculatedDelay, MAX_DELAY));
     }
 
-    private determineTarget(context: FunctionContext, target?: string): { bot: Bot | undefined; targetChannelId: string } {
+    private determineTarget(
+        context: FunctionContext,
+        target?: string,
+    ): { bot: Bot | undefined; targetChannelId: string } {
         if (!target) {
             const session = context.session;
             const bot = session.bot;
@@ -228,20 +236,22 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
         return { bot, targetChannelId: channelId };
     }
 
-    private async sendMessagesWithHumanLikeDelay(messages: string[], bot: Bot, channelId: string, isDirect: boolean): Promise<void> {
+    private async sendMessagesWithHumanLikeDelay(
+        messages: string[],
+        bot: Bot,
+        channelId: string,
+        isDirect: boolean,
+    ): Promise<void> {
         for (let i = 0; i < messages.length; i++) {
             const msg = messages[i].trim();
-            if (!msg)
-                continue;
+            if (!msg) continue;
 
             const delay = this.getTypingDelay(msg);
             const content = await this.assetService.encode(msg);
             this.ctx.logger.debug(`发送消息 | 延迟: ${Math.round(delay)}ms`);
 
-            if (i >= 1)
-                await sleep(delay);
-            if (this.disposed)
-                return;
+            if (i >= 1) await sleep(delay);
+            if (this.disposed) return;
 
             const messageIds = await bot.sendMessage(channelId, content);
 
@@ -256,7 +266,13 @@ export default class CoreUtilPlugin extends Plugin<CoreUtilConfig> {
         }
     }
 
-    private emitAfterSendEvent(bot: Bot, channelId: string, content: string, messageId: string, isDirect: boolean): void {
+    private emitAfterSendEvent(
+        bot: Bot,
+        channelId: string,
+        content: string,
+        messageId: string,
+        isDirect: boolean,
+    ): void {
         const session = bot.session({
             type: "after-send",
             channel: { id: channelId, type: isDirect ? 1 : 0 },

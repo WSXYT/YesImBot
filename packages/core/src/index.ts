@@ -68,9 +68,7 @@ export default class YesImBot extends Service<Config> {
                     services.forEach((service) => {
                         try {
                             service.dispose();
-                        } catch (error: any) {
-
-                        }
+                        } catch (error: any) {}
                     });
                     this.ctx.stop();
                 });

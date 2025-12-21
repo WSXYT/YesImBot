@@ -130,8 +130,7 @@ export class PromptService extends Service<Config> {
 
         this.registerSnippet("bot", async (scope) => {
             const { session } = scope as { session?: Session };
-            if (!session)
-                return {};
+            if (!session) return {};
             return {
                 id: session.bot.selfId,
                 name: session.bot.user.name,
@@ -142,8 +141,7 @@ export class PromptService extends Service<Config> {
 
         this.registerSnippet("user", async (scope) => {
             const { session } = scope as { session?: Session };
-            if (!session)
-                return {};
+            if (!session) return {};
             return {
                 id: session.author.id,
                 name: session.author.name,
@@ -163,8 +161,7 @@ export class PromptService extends Service<Config> {
                 this.injections.map(async (injection) => {
                     try {
                         const result = await injection.renderFn(scope);
-                        if (!result)
-                            return "";
+                        if (!result) return "";
                         return `<${injection.name}>\n${result}\n</${injection.name}>`;
                     } catch (error: any) {
                         this.ctx.logger.error(`执行注入片段 "${injection.name}" 时出错: ${error.message}`);
@@ -178,7 +175,10 @@ export class PromptService extends Service<Config> {
         });
     }
 
-    private async buildScope(initialScope: Record<string, any>, requiredVariables?: Set<string>): Promise<Record<string, any>> {
+    private async buildScope(
+        initialScope: Record<string, any>,
+        requiredVariables?: Set<string>,
+    ): Promise<Record<string, any>> {
         const scope = { ...initialScope };
 
         for (const [key, snippetFn] of this.snippets.entries()) {
@@ -219,16 +219,13 @@ export class PromptService extends Service<Config> {
     }
 
     private isSnippetRequired(snippetKey: string, requiredVariables: Set<string>): boolean {
-        if (requiredVariables.has(snippetKey))
-            return true;
+        if (requiredVariables.has(snippetKey)) return true;
 
         for (const req of requiredVariables) {
             // Snippet is a parent of a required variable (e.g. snippet "user", required "user.name")
-            if (req.startsWith(`${snippetKey}.`))
-                return true;
+            if (req.startsWith(`${snippetKey}.`)) return true;
             // Snippet is a child of a required variable (e.g. snippet "time.now", required "time")
-            if (snippetKey.startsWith(`${req}.`))
-                return true;
+            if (snippetKey.startsWith(`${req}.`)) return true;
         }
 
         return false;

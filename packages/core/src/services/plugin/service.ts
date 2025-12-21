@@ -123,8 +123,8 @@ export class PluginService extends Service<Config> {
             .usage(
                 [
                     "调用指定的工具并传递参数",
-                    "参数格式为 \"key=value\"，多个参数用空格分隔。",
-                    "如果 value 包含空格，请使用引号将其包裹，例如：key=\"some value\"。",
+                    '参数格式为 "key=value"，多个参数用空格分隔。',
+                    '如果 value 包含空格，请使用引号将其包裹，例如：key="some value"。',
                 ].join("\n"),
             )
             .example(["tool.invoke search_web keyword=koishi"].join("\n"))
@@ -160,8 +160,7 @@ export class PluginService extends Service<Config> {
                 }
 
                 // TODO: Refactor to work without session. A mock context is needed.
-                if (!session)
-                    return "此指令需要在一个会话上下文中使用。";
+                if (!session) return "此指令需要在一个会话上下文中使用。";
 
                 const result = await this.invoke(name, parsedParams, { session });
 
@@ -320,8 +319,7 @@ export class PluginService extends Service<Config> {
 
     public async getFunction(name: string, context?: FunctionContext): Promise<Definition | undefined> {
         const func = this.findFuncByName(name);
-        if (!func)
-            return undefined;
+        if (!func) return undefined;
         if (!context) {
             return func;
         }
@@ -387,8 +385,7 @@ export class PluginService extends Service<Config> {
 
     public getConfig(name: string): any {
         const ext = this.plugins.get(name);
-        if (!ext)
-            return null;
+        if (!ext) return null;
         return ext.config;
     }
 

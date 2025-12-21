@@ -104,16 +104,16 @@ function classifyModel(model: ModelInfo): ClassifiedModelInfo {
     const lowerCaseFamily = model.family?.toLowerCase();
 
     // Check if it's an embedding or rerank model first (highest priority)
-    const isEmbedding
-        = keywordResult?.modelType === ModelType.Embed
-            || lowerCaseName.includes("embedding")
-            || lowerCaseFamily?.includes("embedding")
-            || lowerCaseFamily?.includes("embed");
+    const isEmbedding =
+        keywordResult?.modelType === ModelType.Embed ||
+        lowerCaseName.includes("embedding") ||
+        lowerCaseFamily?.includes("embedding") ||
+        lowerCaseFamily?.includes("embed");
 
-    const isRerank
-        = keywordResult?.modelType === ModelType.Rerank
-            || lowerCaseId.includes("rerank")
-            || lowerCaseName.includes("rerank");
+    const isRerank =
+        keywordResult?.modelType === ModelType.Rerank ||
+        lowerCaseId.includes("rerank") ||
+        lowerCaseName.includes("rerank");
 
     if (isEmbedding) {
         modelType = ModelType.Embed;

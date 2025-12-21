@@ -131,16 +131,12 @@ export function toBoolean(value: any): boolean {
     }
     if (typeof value === "string") {
         const lowerValue = value.toLowerCase().trim();
-        if (lowerValue === "true" || lowerValue === "1")
-            return true;
-        if (lowerValue === "false" || lowerValue === "0")
-            return false;
+        if (lowerValue === "true" || lowerValue === "1") return true;
+        if (lowerValue === "false" || lowerValue === "0") return false;
     }
     if (typeof value === "number") {
-        if (value === 1)
-            return true;
-        if (value === 0)
-            return false;
+        if (value === 1) return true;
+        if (value === 0) return false;
     }
     return Boolean(value);
 }
@@ -236,16 +232,17 @@ const knownMimeTypes: MimeTypeSignature[] = [
     // 图片类型
     {
         mime: "image/jpeg",
-        validate: (buf) => check(buf, [0xFF, 0xD8, 0xFF]),
+        validate: (buf) => check(buf, [0xff, 0xd8, 0xff]),
     },
     {
         mime: "image/png",
-        validate: (buf) => check(buf, [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+        validate: (buf) => check(buf, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     },
     {
         mime: "image/gif",
         // GIF87a 和 GIF89a
-        validate: (buf) => check(buf, [0x47, 0x49, 0x46, 0x38, 0x37, 0x61]) || check(buf, [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]),
+        validate: (buf) =>
+            check(buf, [0x47, 0x49, 0x46, 0x38, 0x37, 0x61]) || check(buf, [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]),
     },
     {
         mime: "image/webp",
@@ -254,12 +251,12 @@ const knownMimeTypes: MimeTypeSignature[] = [
     },
     {
         mime: "image/bmp",
-        validate: (buf) => check(buf, [0x42, 0x4D]),
+        validate: (buf) => check(buf, [0x42, 0x4d]),
     },
     {
         mime: "image/tiff",
         // 两种字节序
-        validate: (buf) => check(buf, [0x49, 0x49, 0x2A, 0x00]) || check(buf, [0x4D, 0x4D, 0x00, 0x2A]),
+        validate: (buf) => check(buf, [0x49, 0x49, 0x2a, 0x00]) || check(buf, [0x4d, 0x4d, 0x00, 0x2a]),
     },
     {
         mime: "image/avif",
@@ -275,28 +272,30 @@ const knownMimeTypes: MimeTypeSignature[] = [
     // 压缩包/复合文档类型
     {
         mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
-        validate: (buf) => check(buf, [0x50, 0x4B, 0x03, 0x04]) && check(buf, [0x77, 0x6F, 0x72, 0x64, 0x2F]), // PK.. 和 'word/'
+        validate: (buf) => check(buf, [0x50, 0x4b, 0x03, 0x04]) && check(buf, [0x77, 0x6f, 0x72, 0x64, 0x2f]), // PK.. 和 'word/'
     },
     {
         mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
-        validate: (buf) => check(buf, [0x50, 0x4B, 0x03, 0x04]) && check(buf, [0x78, 0x6C, 0x2F]), // PK.. 和 'xl/'
+        validate: (buf) => check(buf, [0x50, 0x4b, 0x03, 0x04]) && check(buf, [0x78, 0x6c, 0x2f]), // PK.. 和 'xl/'
     },
     {
         mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
-        validate: (buf) => check(buf, [0x50, 0x4B, 0x03, 0x04]) && check(buf, [0x70, 0x70, 0x74, 0x2F]), // PK.. 和 'ppt/'
+        validate: (buf) => check(buf, [0x50, 0x4b, 0x03, 0x04]) && check(buf, [0x70, 0x70, 0x74, 0x2f]), // PK.. 和 'ppt/'
     },
     {
         mime: "application/zip",
         validate: (buf) =>
-            check(buf, [0x50, 0x4B, 0x03, 0x04]) || check(buf, [0x50, 0x4B, 0x05, 0x06]) || check(buf, [0x50, 0x4B, 0x07, 0x08]),
+            check(buf, [0x50, 0x4b, 0x03, 0x04]) ||
+            check(buf, [0x50, 0x4b, 0x05, 0x06]) ||
+            check(buf, [0x50, 0x4b, 0x07, 0x08]),
     },
     {
         mime: "application/x-rar-compressed",
-        validate: (buf) => check(buf, [0x52, 0x61, 0x72, 0x21, 0x1A, 0x07]),
+        validate: (buf) => check(buf, [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07]),
     },
     {
         mime: "application/x-7z-compressed",
-        validate: (buf) => check(buf, [0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C]),
+        validate: (buf) => check(buf, [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]),
     },
 
     // 音视频类型
@@ -314,7 +313,7 @@ const knownMimeTypes: MimeTypeSignature[] = [
     },
     {
         mime: "audio/mpeg", // mp3
-        validate: (buf) => check(buf, [0x49, 0x44, 0x33]) || check(buf, [0xFF, 0xFB]), // ID3 tag or frame sync
+        validate: (buf) => check(buf, [0x49, 0x44, 0x33]) || check(buf, [0xff, 0xfb]), // ID3 tag or frame sync
     },
     {
         mime: "audio/wav",

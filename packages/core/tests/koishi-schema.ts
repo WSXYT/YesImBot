@@ -24,7 +24,9 @@ export const TestSchema = Schema.object({
         a: Schema.string().description("对象参数a"),
         b: Schema.number().required().description("对象参数b"),
     }).description("这是一个嵌套对象"),
-    enum: Schema.union([Schema.const("a").description("选项A"), Schema.const("b").description("选项B")]).description("这是一个枚举"),
+    enum: Schema.union([Schema.const("a").description("选项A"), Schema.const("b").description("选项B")]).description(
+        "这是一个枚举",
+    ),
 });
 
 /**

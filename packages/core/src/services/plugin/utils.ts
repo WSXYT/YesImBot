@@ -32,7 +32,7 @@ export function toProperties(schema: Schema<any>): Properties {
             case "boolean":
             case "array":
             case "object":
-                properties[key] = { type: value.type, description: value.meta?.description as string || "" };
+                properties[key] = { type: value.type, description: (value.meta?.description as string) || "" };
                 break;
             default:
                 properties[key] = { type: "string" };
