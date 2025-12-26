@@ -17,13 +17,12 @@ YesImBot (Athena) 是一个基于 [Koishi](https://koishi.chat/zh-CN/) 的智能
 
 ## 🎯 核心特性
 
--   **🧠 智能对话管理**：基于意愿值系统控制 Bot 的主动发言频率，模拟真实人类的交流模式
--   **💾 记忆系统**：通过 Memory 和 Scenario 管理上下文，使机器人能够记住和理解对话历史
--   **🔗 多适配器支持**：支持多种 LLM API（OpenAI、Cloudflare、Ollama 等），实现负载均衡和故障转移
--   **🛠️ 可扩展的工具系统**：基于工具调用框架，允许机器人执行各种操作
--   **🎭 自定义人格**：轻松定制 Bot 的名字、性格、响应模式等
--   **📱 Web 管理界面**：提供直观的 Web 界面进行配置和管理
--   **🔌 MCP 扩展支持**：支持 Model Context Protocol 扩展，实现更强大的功能集成
+- **🧠 智能对话管理**：基于意愿值系统控制 Bot 的主动发言频率，模拟真实人类的交流模式
+- **💾 记忆系统**：通过 Memory 和 Scenario 管理上下文，使机器人能够记住和理解对话历史
+- **🔗 多适配器支持**：支持多种 LLM API（OpenAI、Cloudflare、Ollama 等），实现负载均衡和故障转移
+- **🛠️ 可扩展的工具系统**：基于工具调用框架，允许机器人执行各种操作
+- **🎭 自定义人格**：轻松定制 Bot 的名字、性格、响应模式等
+- **📱 Web 管理界面**：提供直观的 Web 界面进行配置和管理
 
 ## 📦 项目结构
 
@@ -33,31 +32,30 @@ YesImBot (Athena) 是一个基于 [Koishi](https://koishi.chat/zh-CN/) 的智能
 YesImBot/
 ├── packages/
 │   ├── core/          # 🎯 核心插件包
-│   ├── mcp/           # 🔌 MCP扩展包
-│   └── webui/         # 📱 Web管理界面
+│   └── shared-model/  # 🔄 共享模型包
+├── plugins/
+│   └── provider-openai/ # 🤖 OpenAI 提供商插件
 ├── package.json       # 项目根配置
 └── README.md          # 项目说明
 ```
 
 ### 📦 包说明
 
-| 包名      | 描述                        | NPM 包名                               |
-| --------- | --------------------------- | -------------------------------------- |
-| **core**  | 核心聊天机器人功能          | `koishi-plugin-yesimbot`               |
-| **mcp**   | Model Context Protocol 扩展 | `koishi-plugin-yesimbot-extension-mcp` |
-| **webui** | Web 管理界面                | _开发中_                               |
+| 包名                | 描述                  | NPM 包名                                  |
+| ------------------- | --------------------- | ----------------------------------------- |
+| **core**            | 核心聊天机器人功能    | `koishi-plugin-yesimbot`                  |
+| **shared-model**    | 共享模型和提供商抽象  | `@yesimbot/shared-model`                  |
+| **provider-openai** | OpenAI 模型提供商插件 | `@yesimbot/koishi-plugin-provider-openai` |
 
 ## 📋 文档导航
 
 除了文档站（[https://docs.yesimbot.chat/](https://docs.yesimbot.chat/)）的文档外，仓库内还有内置的文档可供参考：
 
-| 文档类型        | 文件路径                                                                         | 描述                                |
-| --------------- | -------------------------------------------------------------------------------- | ----------------------------------- |
-| 🎯 **核心功能** | [packages/core/README.md](packages/core/README.md)                               | 核心插件的详细使用说明和配置指南    |
-| 🏗️ **架构设计** | [packages/core/DESIGN.md](packages/core/DESIGN.md)                               | 系统架构、中间件设计和核心组件说明  |
-| 🔧 **扩展开发** | [packages/core/src/extensions/README.md](packages/core/src/extensions/README.md) | 扩展系统开发指南和 API 文档         |
-| 🔌 **MCP 扩展** | [packages/mcp/README.md](packages/mcp/README.md)                                 | Model Context Protocol 扩展使用说明 |
-| 📱 **Web 界面** | [packages/webui/README.md](packages/webui/README.md)                             | Web 管理界面使用和开发文档          |
+| 文档类型           | 文件路径                                                               | 描述                             |
+| ------------------ | ---------------------------------------------------------------------- | -------------------------------- |
+| 🎯 **核心功能**    | [packages/core/README.md](packages/core/README.md)                     | 核心插件的详细使用说明和配置指南 |
+| 🔄 **共享模型**    | [packages/shared-model/README.md](packages/shared-model/README.md)     | 共享模型和提供商抽象说明         |
+| 🤖 **OpenAI 插件** | [plugins/provider-openai/README.md](plugins/provider-openai/README.md) | OpenAI 提供商插件说明            |
 
 ## 🤝 贡献
 
@@ -71,8 +69,8 @@ YesImBot/
 
 ## 💬 社区支持
 
--   🐛 **问题反馈**: [GitHub Issues](https://github.com/HydroGest/YesImBot/issues)
--   💬 **QQ 交流群**: [857518324](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=k3O5_1kNFJMERGxBOj1ci43jHvLvfru9&authKey=TkOxmhIa6kEQxULtJ0oMVU9FxoY2XNiA%2B7bQ4K%2FNx5%2F8C8ToakYZeDnQjL%2B31Rx%2B&noverify=0&group_code=857518324)
+- 🐛 **问题反馈**: [GitHub Issues](https://github.com/HydroGest/YesImBot/issues)
+- 💬 **QQ 交流群**: [857518324](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=k3O5_1kNFJMERGxBOj1ci43jHvLvfru9&authKey=TkOxmhIa6kEQxULtJ0oMVU9FxoY2XNiA%2B7bQ4K%2FNx5%2F8C8ToakYZeDnQjL%2B31Rx%2B&noverify=0&group_code=857518324)
 
 ## 📄 许可证
 
